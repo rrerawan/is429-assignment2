@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="myApp">
 
 <head>
 
@@ -86,28 +86,35 @@
                 </div>
             </div>
             <div class="row">
+			<div class="bs-example" data-example-id="hoverable-table">
+			<br/>
+			<br/>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Job</th>
+          <th>Pay</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="user in users">
+          <th scope="row"></th>
+          <td>{{user.title}}</td>
+          <td>{{user.cost}}</td>
+          <td>{{user.location}}</td>
+						<td>
+                                <button type="submit"  ng-click="save()" class="btn btn-success btn-sm">Accept!</button>
+                            
+							</td>
+        </tr>
+      </tbody>
+    </table>
+	
+	
 			<!--
-                <div class="col-sm-4 portfolio-item">
-                    <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <i class="fa fa-search-plus fa-3x"></i>
-                            </div>
-                        </div>
-                        <img src="img/portfolio/cabin.png" class="img-responsive" alt="">
-                    </a>
-                </div>
-
-                <div class="col-sm-4 portfolio-item">
-                    <a href="#portfolioModal2" class="portfolio-link" data-toggle="modal">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <i class="fa fa-search-plus fa-3x"></i>
-                            </div>
-                        </div>
-                        <img src="img/portfolio/cake.png" class="img-responsive" alt="">
-                    </a>
-                </div>
+                
                 <div class="col-sm-4 portfolio-item">
                     <a href="#portfolioModal3" class="portfolio-link" data-toggle="modal">
                         <div class="caption">
@@ -171,7 +178,15 @@
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Job Title</label>
-                                <input class="form-control" placeholder="Please help me to... (max 40 words)" id="cost" required data-validation-required-message="Please enter your email address.">
+                                <input class="form-control" placeholder="Please help me to... (max 40 words)" ng-model="newuser.title" required data-validation-required-message="Please enter the title of the job" >
+                                <p class="help-block text-danger"></p>
+                            </div>
+                        </div>
+						
+						<div class="row control-group">
+                            <div class="form-group col-xs-12 floating-label-form-group controls">
+                                <label>Location</label>
+                                <input class="form-control" placeholder="I am at.." ng-model="newuser.location" required data-validation-required-message="Please enter your location" >
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
@@ -179,7 +194,7 @@
                         <div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Job description</label>
-                                <textarea rows="5" class="form-control" placeholder="Enter details" id="message" required data-validation-required-message="Please enter a message."></textarea>
+                                <textarea rows="5" class="form-control" placeholder="Enter details" ng-model="newuser.description" required data-validation-required-message="Please enter a message."></textarea>
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
@@ -187,7 +202,7 @@
 						<div class="row control-group">
                             <div class="form-group col-xs-12 floating-label-form-group controls">
                                 <label>Payment</label>
-                                <input class="form-control" placeholder="How much would you pay?" id="cost" required data-validation-required-message="Please enter your email address.">
+                                <input class="form-control" placeholder="$xx.xx" ng-model="newuser.cost" required data-validation-required-message="Please enter your email address.">
                                 <p class="help-block text-danger"></p>
                             </div>
                         </div>
@@ -196,7 +211,7 @@
                         <div id="success"></div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <button type="submit" class="btn btn-success btn-lg">Post!</button>
+                                <button type="submit"  ng-click="save()" class="btn btn-success btn-lg">Post!</button>
                             </div>
                         </div>
                     </form>
@@ -484,6 +499,72 @@
         </div>
     </div>
 
+	
+	<script>
+  var myApp = angular.module("myApp", ["firebase"]);
+    myApp.controller('userController', ['$scope', '$firebase',
+        
+        function($scope, $firebase) {
+    $scope.newuser = {};
+	$scope.title = '';
+    $scope.description = '';
+    $scope.cost = '';
+    $scope.location = '';
+    
+    //We can replace this with a Firebase url later on. 
+    var ref = new Firebase("https://rrerawan.firebaseio.com");
+    $scope.users = $firebase(ref.child("user")).$asArray(); 
+    /*
+    $scope.users = [
+        {id:1, fName:'Hege'  , lName:"Pege" },
+        {id:2, fName:'Kim'   , lName:"Pim" },
+        {id:3, fName:'Jack'  , lName:"Jones" },
+        {id:4, fName:'John'  , lName:"Doe" },
+        {id:5, fName:'Peter' , lName:"Pan" }
+    ];
+    */
+    
+    $scope.edit = true;
+    $scope.error = false;
+    $scope.incomplete = false;  
+    
+    
+/*    $scope.editUser = function(id) {
+        $scope.currentId = id;
+        if (id == 'new') {
+            $scope.edit = true;
+            $scope.incomplete = true;
+            $scope.newuser.title = '';
+            console.log("new user.");
+        } else {
+            $scope.edit = true;
+            $scope.newuser = $firebase(ref.child("user").child(id)).$asObject();
+            console.log("existing user.");
+        }
+    };*/
+    
+
+    $scope.save = function(){
+      //Add new if no index is passed in.
+	  
+      $scope.currentId='new';
+      if($scope.currentId=='new'){
+        //Using the array length as the next index while prototyping. 
+         $scope.users.$add($scope.newuser);
+      }
+      else{
+        $scope.newuser.$save();
+      }
+    };
+    
+    $scope.deleteUser = function(index){
+      $scope.users.$remove(index);
+      console.log("removing "+index);
+    }
+    
+    }]);
+
+  </script>
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
 
