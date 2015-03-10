@@ -17,7 +17,7 @@ module.exports = {
     'firebase': firebaseRef,
     'plans': {
         //defines the plans that are available
-        "3000": {
+        "2999": {
             "description": "Regular Plan",
             "merchant_preferences": {
                 "auto_bill_amount": "yes",
@@ -57,7 +57,7 @@ module.exports = {
             ],
             "type": "INFINITE"
         },
-        '9000': {
+        '5999': {
             "description": "Hardcore Plan",
             "merchant_preferences": {
                 "auto_bill_amount": "yes",
@@ -109,8 +109,8 @@ module.exports = {
     //creates billing agreement data based on the tier and address
     'createAgreementData': function(tier, planId, address){
         return {
-            "name": tier == '3000'? "Regular Plan": "Premium Plan",
-            "description": tier == '3000'? "Regular Plan": "Premium Plan",
+            "name": tier == '2999'? "Regular Plan": "Premium Plan",
+            "description": tier == '2999'? "Regular Plan": "Premium Plan",
             "start_date": getStartDate(),
             "plan":{
                 "id": planId
